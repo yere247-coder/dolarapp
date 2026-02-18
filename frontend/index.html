@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conversor USD ↔ VES</title>
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="./img/favicon-96x96.png" sizes="96x96" />
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Conversor USD VES</h1>
+    <p class="tasa-info">Tasa actual: <span id="tasa">Cargando...</span> VES/USD | Fecha: <span id="fecha">--/--/----</span></p>
+    <button id="actualizar-tasa">Actualizar tasa</button>
+  </header>
+
+  <section class="converter-card">
+    <input type="number" id="monto" placeholder="Monto" />
+    <select id="moneda">
+      <option value="usd">USD → VES</option>
+      <option value="ves">VES → USD</option>
+    </select>
+    <div id="resultado">0.00</div>
+    <button id="copiar-btn">Copiar</button>
+
+
+    <h3>Historial de tasas</h3>
+    <select id="historial-fechas"></select>
+    <button id="usar-tasa">Usar tasa</button>
+  </section>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

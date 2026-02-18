@@ -1,0 +1,86 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, rgb(24, 24, 24));
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  background: rgb(100, 100, 100);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 65%;
+  box-shadow: 0 8px 20px rgba(5, 112, 201, 0.425);
+}
+
+header h1 { text-align: center; color: #ffffff; }
+.tasa-info { text-align: center; font-size: 0.9rem; color: #06fc58; }
+
+.converter-card {
+  background: #3b3b3b;
+  padding: 1rem;
+  border-radius: 12px;
+  margin-top: 1.5rem;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+input, select, button {
+  width: 80%;
+  padding: 0.6rem;
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #1b1b1b;
+  text-align: center;
+  background-color: rgb(29, 29, 29);
+  color: #ffffff;
+}
+
+button {
+  background-color: #3498db;
+  color: #ffffff;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+}
+h3 {
+    color: #ffffff;
+}
+
+input::placeholder {
+    color: #b8b8b8;
+}
+
+#resultado {
+  font-size: 2rem;
+  font-weight: bold;
+  
+  
+   /* fondo suave amarillo */
+  color: #06fc58;            /* texto naranja */
+  border-radius: 8px;
+  display: inline-block;
+  
+}
+
+#actualizar-tasa, #copiar-btn {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  margin: 0.5rem auto;
+  display: block;      /* esto centra el botón */
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  transition: background 0.3s;
+}
+
+
