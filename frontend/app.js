@@ -65,11 +65,16 @@ async function cargarHistorial() {
 function calcularResultado() {
   const monto = parseFloat(montoEl.value);
   if (!monto || tasa === 0) {
-    resultadoEl.innerText = "0.00";
+    resultadoEl.innerText = "0,00";
     return;
   }
+  
   const resultado = monedaEl.value === "usd" ? monto * tasa : monto / tasa;
-  resultadoEl.innerText = resultado.toFixed(2);
+
+  resultadoEl.innerText = resultado.toLocaleString('es-VE', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4
+  });
 }
 
 // Eventos
