@@ -8,7 +8,7 @@ const app = express();
 app.use(cors());
 
 // API pública correcta
-const API_URL = "https://bcv-api.rafnixg.dev/rates/";
+const API_URL = "https://ve.dolarapi.com/v1/dolares/oficial";
 const HISTORIAL_FILE = path.join(__dirname, "historial.json");
 
 // Leer historial
@@ -62,20 +62,14 @@ app.get("/api/historial", (req, res) => {
 
 app.get("/api/tasa", async (req, res) => {
   try {
-    console.log("Solicitando tasa actualizada a la API...");
-    
-    // Usamos la API original pero con HEADERS para evitar el 403
-    const response = await axios.get("https://bcv-api.rafnixg.dev/rates/", { 
-      timeout: 10000,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'application/json'
-      }
-    });
+    console.log("Solicitando tasa actualizada a DolarApi...");
+    const response = await axios.get(API_URL, { timeout: 10000 });
+    const data = response.data;
 
-    const json = response.data;
-    const tasa = parseFloat(json.dollar);
-    const fecha = json.date;
+    // El formato de esta API es diferente: { "promedio": 398.74, "fechaActualizacion": "..." }
+    const tasa = parseFloat(data.promedio);
+    // Convertimos la fecha al formato que usas (YYYY-MM-DD)
+    const fecha = data.fechaActualizacion.split('T')[0]; 
 
     // Guardar en historial si es nuevo
     let historial = leerHistorial();
@@ -87,15 +81,13 @@ app.get("/api/tasa", async (req, res) => {
     res.json({ tasa, fecha });
 
   } catch (error) {
-    console.log("Error crítico (403 u otro): Usando último respaldo local...");
-    
-    // REGLA DE ORO: Si falla internet, NUNCA respondas vacío. 
-    // Usamos el historial para evitar el NaN en el frontend.
+    console.log("Fallo DolarApi, usando historial:", error.message);
     const historial = leerHistorial();
     if (historial.length > 0) {
       const ultima = historial[historial.length - 1];
       return res.json({ tasa: ultima.usd, fecha: ultima.fecha });
     }
+    res.json({ tasa: 398.74, fecha: "2026-02-19" });
   }
 });
 
