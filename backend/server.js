@@ -62,35 +62,39 @@ app.get("/api/historial", (req, res) => {
 
 // Obtener última tasa
 app.get("/api/tasa", async (req, res) => {
-  const historial = leerHistorial();
-  if (historial.length > 0) {
-    const ultima = historial[historial.length - 1];
-    return res.json({ tasa: ultima.usd, fecha: ultima.fecha });
-  }
-
   try {
+    // 1. Intentamos buscar siempre lo más nuevo en internet
     const response = await axios.get(API_URL, { timeout: 5000 });
     const json = response.data;
-
-    if (!json || !json.dollar || !json.date) {
-      throw new Error("Respuesta API no válida");
-    }
 
     const tasa = parseFloat(json.dollar);
     const fecha = json.date;
 
-    const nuevaTasa = { fecha, usd: tasa };
-    historial.push(nuevaTasa);
-    guardarHistorial(historial);
+    // 2. Guardamos en el historial para que no se pierda
+    let historial = leerHistorial();
+    const index = historial.findIndex(h => h.fecha === fecha);
+    if (index === -1) {
+        historial.push({ fecha, usd: tasa });
+        guardarHistorial(historial);
+    }
 
-    res.json({ tasa, fecha });
+    return res.json({ tasa, fecha });
+
   } catch (error) {
-    console.log("Error obteniendo tasa:", error.message);
-    res.json({ tasa: 0, fecha: "Respaldo local" });
+    console.log("Error obteniendo tasa de internet, usando historial:", error.message);
+    
+    // 3. Solo si falla internet, usamos el historial guardado
+    const historial = leerHistorial();
+    if (historial.length > 0) {
+      const ultima = historial[historial.length - 1];
+      return res.json({ tasa: ultima.usd, fecha: ultima.fecha });
+    }
+    
+    res.json({ tasa: 0, fecha: "Error de conexión" });
   }
 });
 
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, "0.0.0.0", () =>
   console.log(`Servidor corriendo en http://0.0.0.0:${PORT}`)
 );
