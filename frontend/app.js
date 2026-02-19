@@ -26,8 +26,8 @@ async function cargarTasa() {
   } catch (error) {
     console.error("Error cargando tasa:", error);
     // Respaldo local
-    tasa = parseFloat(localStorage.getItem("ultimaTasa")) || 0;
-    tasaEl.innerText = tasa.toFixed(2);
+    tasa = parseFloat(data.tasa);
+    tasaEl.innerText = tasa.toLocaleString('es-VE', { minimumFractionDigits: 4 }); // Muestra 4 decimales
     fechaEl.innerText = localStorage.getItem("ultimaFecha") || "--/--/----";
   }
   calcularResultado();
@@ -73,7 +73,7 @@ function calcularResultado() {
 
   resultadoEl.innerText = resultado.toLocaleString('es-VE', {
     minimumFractionDigits: 2,
-    maximumFractionDigits: 4
+    maximumFractionDigits: 2
   });
 }
 
@@ -90,7 +90,7 @@ usarTasaBtn.addEventListener("click", () => {
 
     if (!isNaN(valorTasa)) {
       tasa = valorTasa;
-      tasaEl.innerText = tasa.toFixed(4);
+      tasaEl.innerText = tasa.toLocaleString('es-VE', { minimumFractionDigits: 4 });
       fechaEl.innerText = fechaTasa;
       calcularResultado();
     }
