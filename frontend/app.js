@@ -1,3 +1,6 @@
+// Configuración de la URL de tu backend en Render
+const API_BASE_URL = "https://dolarapp-95xs.onrender.com"; 
+
 const tasaEl = document.getElementById("tasa");
 const fechaEl = document.getElementById("fecha");
 const montoEl = document.getElementById("monto");
@@ -11,7 +14,8 @@ let tasa = 0;
 // Cargar última tasa y respaldo offline
 async function cargarTasa() {
   try {
-    const res = await fetch("http://localhost:4000/api/tasa");
+    // Se cambia localhost por la URL de producción de Render
+    const res = await fetch(`${API_BASE_URL}/api/tasa`);
     const data = await res.json();
     tasa = parseFloat(data.tasa);
     tasaEl.innerText = tasa.toFixed(2);
@@ -19,7 +23,8 @@ async function cargarTasa() {
 
     localStorage.setItem("ultimaTasa", tasa);
     localStorage.setItem("ultimaFecha", data.fecha);
-  } catch {
+  } catch (error) {
+    console.error("Error cargando tasa:", error);
     // Respaldo local
     tasa = parseFloat(localStorage.getItem("ultimaTasa")) || 0;
     tasaEl.innerText = tasa.toFixed(2);
@@ -31,7 +36,8 @@ async function cargarTasa() {
 // Cargar historial
 async function cargarHistorial() {
   try {
-    const res = await fetch("http://localhost:4000/api/historial");
+    // Se cambia localhost por la URL de producción de Render
+    const res = await fetch(`${API_BASE_URL}/api/historial`);
     const historial = await res.json();
     historialSelect.innerHTML = "";
     historial.forEach(item => {
@@ -41,7 +47,8 @@ async function cargarHistorial() {
       historialSelect.appendChild(option);
     });
     localStorage.setItem("historial", JSON.stringify(historial));
-  } catch {
+  } catch (error) {
+    console.error("Error cargando historial:", error);
     const backup = JSON.parse(localStorage.getItem("historial")) || [];
     historialSelect.innerHTML = "";
     backup.forEach(item => {
@@ -95,7 +102,7 @@ actualizarBtn.addEventListener("click", async () => {
   actualizarBtn.disabled = true;
   actualizarBtn.innerText = "Actualizando...";
   try {
-    await cargarTasa(); // reutiliza la función existente
+    await cargarTasa(); 
   } catch (err) {
     alert("Error al actualizar la tasa: " + err);
   } finally {
