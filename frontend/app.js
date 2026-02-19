@@ -41,11 +41,12 @@ async function cargarHistorial() {
     const historial = await res.json();
     historialSelect.innerHTML = "";
     historial.forEach(item => {
-      const option = document.createElement("option");
-      option.value = item.usd;
-      option.text = `${item.fecha} → ${item.usd.toFixed(2)} VES/USD`;
-      historialSelect.appendChild(option);
-    });
+    const option = document.createElement("option");
+    option.value = item.usd;
+    option.dataset.fecha = item.fecha;
+    option.text = `${item.fecha} → ${item.usd.toFixed(4)} VES/USD`;
+    historialSelect.appendChild(option);
+  });
     localStorage.setItem("historial", JSON.stringify(historial));
   } catch (error) {
     console.error("Error cargando historial:", error);
@@ -76,11 +77,18 @@ montoEl.addEventListener("input", calcularResultado);
 monedaEl.addEventListener("change", calcularResultado);
 
 usarTasaBtn.addEventListener("click", () => {
-  const seleccion = parseFloat(historialSelect.value);
-  if (!isNaN(seleccion)) {
-    tasa = seleccion;
-    tasaEl.innerText = tasa.toFixed(2);
-    calcularResultado();
+  const seleccion = historialSelect.options[historialSelect.selectedIndex];
+  
+  if (seleccion) {
+    const valorTasa = parseFloat(seleccion.value);
+    const fechaTasa = seleccion.dataset.fecha;
+
+    if (!isNaN(valorTasa)) {
+      tasa = valorTasa;
+      tasaEl.innerText = tasa.toFixed(4);
+      fechaEl.innerText = fechaTasa;
+      calcularResultado();
+    }
   }
 });
 
