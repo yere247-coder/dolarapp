@@ -14,23 +14,30 @@ let tasa = 0;
 // Cargar última tasa y respaldo offline
 async function cargarTasa() {
   try {
-    // Se cambia localhost por la URL de producción de Render
     const res = await fetch(`${API_BASE_URL}/api/tasa?update=${Date.now()}`);
     const data = await res.json();
+    
+    // Guardamos el valor numérico real
     tasa = parseFloat(data.tasa);
-    tasaEl.innerText = tasa.toFixed(2);
+
+    // Mostramos la tasa con 4 decimales y formato venezolano (coma para decimales)
+    tasaEl.innerText = tasa.toLocaleString('es-VE', {
+      minimumFractionDigits: 4,
+      maximumFractionDigits: 4
+    });
+
     fechaEl.innerText = data.fecha;
 
     localStorage.setItem("ultimaTasa", tasa);
     localStorage.setItem("ultimaFecha", data.fecha);
   } catch (error) {
     console.error("Error cargando tasa:", error);
-    // Respaldo local
-    tasa = parseFloat(data.tasa);
-    tasaEl.innerText = tasa.toLocaleString('es-VE', { minimumFractionDigits: 4 }); // Muestra 4 decimales
+    // Respaldo local también con 4 decimales
+    tasa = parseFloat(localStorage.getItem("ultimaTasa")) || 0;
+    tasaEl.innerText = tasa.toLocaleString('es-VE', { minimumFractionDigits: 4 });
     fechaEl.innerText = localStorage.getItem("ultimaFecha") || "--/--/----";
   }
-  calcularResultado();
+  calcularResultado(); // Esto seguirá mostrando 2 decimales en el monto final
 }
 
 // Cargar historial
