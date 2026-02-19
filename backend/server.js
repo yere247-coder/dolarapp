@@ -60,37 +60,38 @@ app.get("/api/historial", (req, res) => {
   res.json(leerHistorial());
 });
 
-// Obtener última tasa
+// Obtener última tasa (SIEMPRE DESDE INTERNET)
 app.get("/api/tasa", async (req, res) => {
   try {
-    // 1. Intentamos buscar siempre lo más nuevo en internet
+    console.log("Solicitando tasa actualizada a la API...");
+    // Aumentamos el timeout a 10 segundos para evitar que falle por lentitud
     const response = await axios.get(API_URL, { timeout: 10000 });
     const json = response.data;
+
+    if (!json || !json.dollar || !json.date) {
+      throw new Error("Respuesta API no válida");
+    }
 
     const tasa = parseFloat(json.dollar);
     const fecha = json.date;
 
-    // 2. Guardamos en el historial para que no se pierda
+    // Guardamos en el historial en segundo plano solo si es un día nuevo
     let historial = leerHistorial();
-    const index = historial.findIndex(h => h.fecha === fecha);
-    if (index === -1) {
-        historial.push({ fecha, usd: tasa });
-        guardarHistorial(historial);
+    if (!historial.find(h => h.fecha === fecha)) {
+      historial.push({ fecha, usd: tasa });
+      guardarHistorial(historial);
+      console.log(`Nueva tasa guardada en historial: ${fecha}`);
     }
 
-    return res.json({ tasa, fecha });
+    // Enviamos la respuesta fresca de internet
+    res.json({ tasa, fecha });
 
   } catch (error) {
-    console.log("Error obteniendo tasa de internet, usando historial:", error.message);
+    console.log("Error crítico: No se pudo obtener la tasa de internet:", error.message);
     
-    // 3. Solo si falla internet, usamos el historial guardado
-    const historial = leerHistorial();
-    if (historial.length > 0) {
-      const ultima = historial[historial.length - 1];
-      return res.json({ tasa: ultima.usd, fecha: ultima.fecha });
-    }
-    
-    res.json({ tasa: 0, fecha: "Error de conexión" });
+    // Solo en caso de error total de internet, enviamos un error claro
+    // Esto evitará que el frontend muestre datos viejos sin que te des cuenta
+    res.status(503).json({ error: "Servicio de tasa no disponible temporalmente" });
   }
 });
 

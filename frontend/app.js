@@ -15,7 +15,7 @@ let tasa = 0;
 async function cargarTasa() {
   try {
     // Se cambia localhost por la URL de producción de Render
-    const res = await fetch(`${API_BASE_URL}/api/tasa?t=${new Date().getTime()}`);
+    const res = await fetch(`${API_BASE_URL}/api/tasa?update=${Date.now()}`);
     const data = await res.json();
     tasa = parseFloat(data.tasa);
     tasaEl.innerText = tasa.toFixed(2);
