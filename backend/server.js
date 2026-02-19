@@ -64,7 +64,7 @@ app.get("/api/historial", (req, res) => {
 app.get("/api/tasa", async (req, res) => {
   try {
     // 1. Intentamos buscar siempre lo más nuevo en internet
-    const response = await axios.get(API_URL, { timeout: 5000 });
+    const response = await axios.get(API_URL, { timeout: 10000 });
     const json = response.data;
 
     const tasa = parseFloat(json.dollar);
